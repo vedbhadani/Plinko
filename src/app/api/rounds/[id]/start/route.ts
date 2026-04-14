@@ -93,8 +93,8 @@ export async function POST(
         binIndex: result.binIndex,
         payoutMultiplier,
         betCents,
-        // serialize array to Json, Prisma will store it as string transparently
-        pathJson: result.path,
+        // serialize array to String, Prisma will store it as string transparently
+        pathJson: JSON.stringify(result.path),
       },
     });
 

@@ -25,6 +25,6 @@ model Round {
   binIndex         Int?
   payoutMultiplier Float?
   betCents         Int?
-  pathJson         Json?     // decisions per row for replay
+  pathJson         String?   // decisions per row for replay
   revealedAt       DateTime?
 }

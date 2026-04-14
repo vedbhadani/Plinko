@@ -10,6 +10,7 @@ interface RoundLog {
   betCents: number;
   commitHex: string;
   pathJson?: any;
+  dropColumn?: number;
 }
 
 interface SessionLogProps {
@@ -63,9 +64,11 @@ export default function SessionLog({ onReplayRound }: SessionLogProps) {
   };
 
   const handleReplay = (round: RoundLog) => {
-    if (onReplayRound && round.pathJson && Array.isArray(round.pathJson)) {
-      // Assuming a default drop column of 6 for historical replays if not available
-      onReplayRound(round.pathJson as Direction[], 6);
+    if (onReplayRound && round.pathJson) {
+      const path = typeof round.pathJson === 'string' 
+        ? JSON.parse(round.pathJson) 
+        : round.pathJson;
+      onReplayRound(path as Direction[], round.dropColumn ?? 6);
     }
   };
 

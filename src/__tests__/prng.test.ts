@@ -12,7 +12,7 @@ import { computeCombinedSeed } from '../lib/hash';
 describe('xorshift32 PRNG', () => {
   // Assignment test vector inputs
   const serverSeed =
-    'b2a53f52a46c0ea7ab1c63349077808abcbfe5a1ca398755c32ffeedbc1';
+    'b2a5f3f32a4d9c6ee7a8c1d33456677890abcdeffedcba0987654321ffeeddcc';
   const nonce = '42';
   const clientSeed = 'candidate-hello';
 

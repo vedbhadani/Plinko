@@ -119,10 +119,7 @@ export default function Home() {
     
     // Dummy cleanup for replay
     (window as any).__lastRoundId = null;
-    let computedCol = historicalDropColumn;
-    for(let d of historicalPath) {
-      if(d === 'R') computedCol++;
-    }
+    const computedCol = historicalPath.filter(d => d === 'R').length;
     (window as any).__lastBinIndex = computedCol;
   };
 
