@@ -1,0 +1,38 @@
+.boardContainer {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  min-height: 600px;
+  overflow: hidden;
+  transition: transform 0.5s ease;
+}
+
+.canvas {
+  display: block;
+  /* Make canvas responsive but sharp using DPR logic in JS */
+  max-width: 100%; 
+}
+
+/* Easter Egg: TILT Mode */
+.tiltMode {
+  transform: rotate(-3deg) scale(1.02);
+  filter: contrast(120%) sepia(20%) drop-shadow(5px 5px 10px rgba(0,0,0,0.5));
+}
+
+.tiltOverlay {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 2rem;
+  font-weight: bold;
+  color: red;
+  text-shadow: 0 0 5px red;
+  animation: flash 1s infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes flash {
+  0% { opacity: 0.2; }
+  100% { opacity: 1; }
+}
