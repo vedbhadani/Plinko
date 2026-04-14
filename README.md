@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Provably Fair Plinko
 
-## Getting Started
+A production-ready, provably fair Plinko web application built with Next.js, Prisma, and Canvas, implementing a cryptographic commit-reveal schema ensuring completely deterministic and verifiable round outcomes.
 
-First, run the development server:
+## Technical Architecture
+
+### Core Fairness Implementation
+- **PRNG**: Strict implementation of the `xorshift32` algorithm (using constants 13, 17, 5) ensuring cycle accuracy and handling Javascript unsigned bitwise quirks. The PRNG prevents a starting seed of `0` by automatically bumping it to `1`.
+- **Hash function**: Synchronous SHA-256 via Node.js `crypto` with explicit `'utf8'` encoding to guarantee cross-environment determinism.
+- **Serialization**: A strict canonical serialization (`JSON.stringify`) generates the deterministic target layout, immune to object key reordering quirks across different parser engines.
+
+### Protocol Flow
+1. **Commit Phase (`/api/rounds/commit`)**
+   - System securely rolls a 32-byte `serverSeed`.
+   - A random `nonce` is selected.
+   - The system returns only the SHA-256 hash `commitHex = SHA256(serverSeed + ":" + nonce)`.
+2. **Start Phase (`/api/rounds/[id]/start`)**
+   - User inputs a `clientSeed` and `dropColumn`.
+   - Target generation: `combinedSeed = SHA256(serverSeed + ":" + clientSeed + ":" + nonce)`.
+   - The first 8 hexadecimal characters of `combinedSeed` construct a 32-bit unsigned PRNG seed for `xorshift32`.
+   - The engine generates a deterministic `pegMap` and computes a `pegMapHash`.
+   - Plinko drops ball calculating each bounce. Bounces mapping to `NaN` use fallback direction 'R'.
+3. **Reveal Phase (`/api/rounds/[id]/reveal`)**
+   - The system reveals the unhashed `serverSeed` to the client.
+4. **Verification Phase (`/verify`)**
+   - Users can mathematically reproduce the `commitHex`, initial seed, `pegMapHash`, path array, and bin index fully client-side.
+
+### Determinism Guarantee
+
+Given identical inputs:
+(serverSeed, clientSeed, nonce, dropColumn)
+
+This system guarantees:
+
+* Identical pegMapHash
+* Identical binIndex
+* Identical path
+
+Across all executions and environments.
+
+This ensures full reproducibility and verifiability of every round.
+
+## Setup & Running
 
 ```bash
+# 1. Install dependencies
+npm install
+
+# 2. Setup SQLite database / Generates client
+npx prisma db push
+
+# 3. Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit `http://localhost:3000` to play.
+Visit `http://localhost:3000/verify` for the mathematical verifier GUI.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Testing
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The core engine tests strictly validate against assignment test vectors.
 
-## Learn More
+```bash
+# Run unit and integration tests
+npx vitest
+```
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Features
+- Hardware-accelerated HTML5 Canvas visualization wrapper.
+- Automatic Window DPR scaling.
+- CSV Session history exporting.
+- Verifier deep-linking.
+- Sub-millisecond physics routing using mathematical easing curves.
+- **Easter Eggs:** Use the TILT or Debug view toggle in the game view.
