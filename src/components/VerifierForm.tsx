@@ -285,6 +285,7 @@ export default function VerifierForm() {
               isAnimating={isReplayAnimating}
               onComplete={() => setIsReplayAnimating(false)}
               debugGrid
+              disableConfetti
             />
           </div>
         </div>

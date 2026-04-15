@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
 import styles from './PlinkoBoard.module.css';
 import type { DecisionTrace, Direction } from '@/lib/engine';
+import { PAYTABLE } from '@/lib/paytable';
 
 interface PlinkoBoardProps {
   rows?: number;
@@ -18,6 +19,7 @@ interface PlinkoBoardProps {
   isAnimating?: boolean;
   isGoldenBall?: boolean; // Easter Egg: Golden Ball
   isSecretTheme?: boolean; // Easter Egg: Secret Theme
+  disableConfetti?: boolean; // Option to disable the blast animation
 }
 
 interface Particle {
@@ -44,6 +46,7 @@ export default function PlinkoBoard({
   isAnimating = false,
   isGoldenBall = false,
   isSecretTheme = false,
+  disableConfetti = false,
 }: PlinkoBoardProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -95,8 +98,8 @@ export default function PlinkoBoard({
 
     let dpr = window.devicePixelRatio || 1;
     let width = container.clientWidth;
-    // Add extra height for bins
-    const height = 40 + (rows + 1) * V_SPACING + 60;
+    // Add extra height for bins (16px gap + 48px bin height + 10px padding)
+    const height = 40 + (rows + 1) * V_SPACING + 74;
 
     const reducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -182,23 +185,54 @@ export default function PlinkoBoard({
 
       // Draw Bins
       const startBinX = width / 2 - (rows * H_SPACING) / 2;
+      const BIN_HEIGHT = 48;
+      const BIN_Y_TOP = 40 + rows * V_SPACING + 16;
+
       for (let i = 0; i <= rows; i++) {
         const x = startBinX + i * H_SPACING;
-        const y = 40 + rows * V_SPACING + 30; // Below last row
+        const binLeft = x - H_SPACING / 2 + 1;
+        const binWidth = H_SPACING - 2;
+
+        // Color-coded bin background
+        const mult = PAYTABLE[i];
+        let binColor: string;
+        if (mult >= 100) binColor = 'rgba(225, 112, 85, 0.25)';       // red — jackpot
+        else if (mult >= 10) binColor = 'rgba(253, 203, 110, 0.25)';  // yellow — high
+        else if (mult >= 3) binColor = 'rgba(0, 184, 148, 0.20)';     // green — mid
+        else binColor = 'rgba(108, 92, 231, 0.20)';                   // purple — low
+
+        ctx.fillStyle = binColor;
+        ctx.fillRect(binLeft, BIN_Y_TOP, binWidth, BIN_HEIGHT);
+
+        // Bin Pulse (landed highlight)
+        if (state.current.lastLandedBin === i && state.current.pulseProgress > 0) {
+          ctx.fillStyle = `rgba(255, 255, 255, ${state.current.pulseProgress * 0.25})`;
+          ctx.fillRect(binLeft, BIN_Y_TOP, binWidth, BIN_HEIGHT);
+        }
 
         // Bin dividers
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-        ctx.fillRect(x - H_SPACING / 2, y - 20, 2, 40);
-
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+        ctx.fillRect(x - H_SPACING / 2, BIN_Y_TOP, 2, BIN_HEIGHT);
         if (i === rows) {
-          ctx.fillRect(x + H_SPACING / 2, y - 20, 2, 40); // cap right side
+          ctx.fillRect(x + H_SPACING / 2, BIN_Y_TOP, 2, BIN_HEIGHT); // cap right
         }
 
-        // Bin Pulse
-        if (state.current.lastLandedBin === i && state.current.pulseProgress > 0) {
-          ctx.fillStyle = `rgba(108, 92, 231, ${state.current.pulseProgress * 0.3})`;
-          ctx.fillRect(x - H_SPACING / 2 + 2, y - 20, H_SPACING - 2, 40);
-        }
+        // Payout label
+        const label = mult >= 1 ? `${mult}x` : `${mult}x`;
+        const isActive = state.current.lastLandedBin === i && state.current.pulseProgress > 0;
+        const fontSize = H_SPACING <= 36 ? 8 : 10;
+        ctx.font = `bold ${fontSize}px Inter, system-ui, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = isActive ? '#ffffff' : (
+          mult >= 100 ? '#e17055' :
+          mult >= 10  ? '#fdcb6e' :
+          mult >= 3   ? '#00b894' :
+                        '#a29bfe'
+        );
+        ctx.fillText(label, x, BIN_Y_TOP + BIN_HEIGHT / 2);
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'alphabetic';
       }
 
       // Draw Trail (for Golden Ball)
@@ -286,7 +320,7 @@ export default function PlinkoBoard({
           s.pulseProgress = 1.0;
 
           // Trigger Confetti
-          if (!reducedMotion) {
+          if (!reducedMotion && !disableConfetti) {
             const canvasRect = canvas.getBoundingClientRect();
             const viewportWidth = Math.max(window.innerWidth, 1);
             const viewportHeight = Math.max(window.innerHeight, 1);
@@ -335,7 +369,7 @@ export default function PlinkoBoard({
               endPos = getPegPosition(s.currentRow + 1, nextCol, width);
             } else {
               endPos = getPegPosition(s.currentRow, s.currentCol, width);
-              endPos.y += 30; // drop into bin
+              endPos.y += 40; // drop into bin centre
             }
           }
 
