@@ -120,7 +120,7 @@ After creating and revealing a round, open `/verify?roundId=<roundId>` to prefil
   - Audited and fixed 6 "Critical Blockers" related to seed extraction and database types.
   - Developed the Canvas animation system and landing confetti.
   - Automated the verification suite (`scratch/verify_spec.js`) to ensure math parity.
-  - Compared the implementation against the assignment PDF and tightened verifier, replay, validation, responsive layout, and README deliverables.
+  - Compared the implementation against the assignment PDF using diffrent AI tools like Claude and tightened verifier, replay, validation, responsive layout, and README deliverables.
 
 ### Time Log
 - **Total Time**: ~5 hours.
