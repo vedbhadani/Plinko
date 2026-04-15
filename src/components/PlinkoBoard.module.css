@@ -17,7 +17,25 @@
 /* Easter Egg: TILT Mode */
 .tiltMode {
   transform: rotate(-3deg) scale(1.02);
-  filter: contrast(120%) sepia(20%) drop-shadow(5px 5px 10px rgba(0,0,0,0.5));
+  filter: contrast(120%) sepia(40%) drop-shadow(5px 5px 10px rgba(0,0,0,0.5));
+}
+
+.tiltMode::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%,
+    rgba(0, 0, 0, 0.1) 50%
+  ), linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.03),
+    rgba(0, 255, 0, 0.01),
+    rgba(0, 0, 255, 0.03)
+  );
+  background-size: 100% 4px, 6px 100%;
+  pointer-events: none;
+  z-index: 10;
 }
 
 .tiltOverlay {
@@ -26,10 +44,12 @@
   right: 20px;
   font-size: 2rem;
   font-weight: bold;
-  color: red;
-  text-shadow: 0 0 5px red;
-  animation: flash 1s infinite alternate;
+  color: #ff3e3e;
+  text-shadow: 0 0 10px #ff0000;
+  animation: flash 0.5s infinite alternate;
   pointer-events: none;
+  z-index: 11;
+  font-family: monospace;
 }
 
 @keyframes flash {

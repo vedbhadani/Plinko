@@ -1,14 +1,19 @@
-import { useEffect, useRef, useState } from 'react';
+'use client';
+
+import { useRef, useState } from 'react';
+
+type AudioContextConstructor = typeof AudioContext;
+
+interface WebKitAudioWindow extends Window {
+  AudioContext?: AudioContextConstructor;
+  webkitAudioContext?: AudioContextConstructor;
+}
 
 export function useSoundManager() {
   const audioCtxRef = useRef<AudioContext | null>(null);
-  const [isMuted, setIsMuted] = useState(false);
-
-  useEffect(() => {
-    // Only access localStorage on client-side
-    const stored = localStorage.getItem('plinko_muted');
-    if (stored === 'true') setIsMuted(true);
-  }, []);
+  const [isMuted, setIsMuted] = useState(
+    () => typeof window !== 'undefined' && localStorage.getItem('plinko_muted') === 'true'
+  );
 
   const toggleMute = () => {
     setIsMuted((prev) => {
@@ -21,17 +26,19 @@ export function useSoundManager() {
   const getCtx = () => {
     // Lazy init of AudioContext requires user gesture
     if (!audioCtxRef.current) {
-      if (typeof window !== 'undefined' && (window.AudioContext || (window as any).webkitAudioContext)) {
-        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      if (typeof window !== 'undefined') {
+        const audioWindow = window as WebKitAudioWindow;
+        const AudioContextClass = audioWindow.AudioContext || audioWindow.webkitAudioContext;
+        if (!AudioContextClass) return null;
         audioCtxRef.current = new AudioContextClass();
       }
     }
-    
+
     // Resume context if suspended (browser autoplay policy)
     if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
       audioCtxRef.current.resume();
     }
-    
+
     return audioCtxRef.current;
   };
 
@@ -69,13 +76,13 @@ export function useSoundManager() {
     const gainNode = ctx.createGain();
 
     osc.type = 'square';
-    
+
     // Sequence
     const now = ctx.currentTime;
     osc.frequency.setValueAtTime(440, now);
     osc.frequency.setValueAtTime(554.37, now + 0.1); // C#5
     osc.frequency.setValueAtTime(659.25, now + 0.2); // E5
-    
+
     gainNode.gain.setValueAtTime(0, now);
     gainNode.gain.linearRampToValueAtTime(0.2, now + 0.05);
     gainNode.gain.setValueAtTime(0.2, now + 0.25);
