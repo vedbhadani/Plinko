@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { computeCombinedSeed } from '@/lib/hash';
 import { extractSeed, xorshift32 } from '@/lib/prng';
-import { runSimulation, serializePegMap } from '@/lib/engine';
+import { runSimulation } from '@/lib/engine';
 import { getMultiplier } from '@/lib/paytable';
 
 export async function POST(
@@ -14,9 +14,9 @@ export async function POST(
     const body = await request.json();
     const { clientSeed, dropColumn, betCents } = body;
 
-    if (!clientSeed || typeof clientSeed !== 'string') {
+    if (!clientSeed || typeof clientSeed !== 'string' || clientSeed.trim() === '') {
       return NextResponse.json(
-        { error: 'Invalid clientSeed' },
+        { error: 'Invalid clientSeed. Must be a non-empty string.' },
         { status: 400 }
       );
     }
@@ -106,6 +106,7 @@ export async function POST(
       rows: updatedRound.rows,
       binIndex: result.binIndex,
       path: result.path,
+      decisionTrace: result.decisionTrace,
       payoutMultiplier,
       betCents,
     });
