@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type AudioContextConstructor = typeof AudioContext;
 
@@ -11,9 +11,13 @@ interface WebKitAudioWindow extends Window {
 
 export function useSoundManager() {
   const audioCtxRef = useRef<AudioContext | null>(null);
-  const [isMuted, setIsMuted] = useState(
-    () => typeof window !== 'undefined' && localStorage.getItem('plinko_muted') === 'true'
-  );
+  // Always initialize to false to avoid SSR/client hydration mismatch,
+  // then sync from localStorage after mount.
+  const [isMuted, setIsMuted] = useState(false);
+
+  useEffect(() => {
+    setIsMuted(localStorage.getItem('plinko_muted') === 'true');
+  }, []);
 
   const toggleMute = () => {
     setIsMuted((prev) => {
