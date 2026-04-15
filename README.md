@@ -8,7 +8,7 @@ A high-performance, provably fair Plinko web application built with **Next.js 16
 - **Frontend**: Next.js 16.2.3 (App Router), React, TypeScript.
 - **Visuals**: High-performance HTML5 Canvas with automatic Device Pixel Ratio (DPR) scaling for sharp rendering.
 - **Backend**: Next.js API Routes with strict input validation.
-- **Database**: SQLite with Prisma ORM for session logging and round persistence.
+- **Database**: PostgreSQL with Prisma ORM for session logging and round persistence.
 - **Audio**: Web Audio API for procedural sound synthesis (no external assets needed).
 
 ### Core Fairness Implementation
@@ -51,10 +51,12 @@ This project follows a standard **Commit-Reveal** protocol:
 # 1. Install dependencies
 npm install
 
-# 2. Setup database and generate Prisma client
-npx prisma db push
+# 2. Create a PostgreSQL database and point .env at it
 
-# 3. Start development
+# 3. Apply the Prisma migration
+npx prisma migrate deploy
+
+# 4. Start development
 npm run dev
 ```
 
@@ -63,7 +65,8 @@ npm run dev
 Create `.env` from `.env.example`:
 
 ```env
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="postgresql://postgres@localhost:54329/plinko_lab?schema=public"
+DIRECT_URL="postgresql://postgres@localhost:54329/plinko_lab?schema=public"
 ```
 
 ## 🧪 Testing

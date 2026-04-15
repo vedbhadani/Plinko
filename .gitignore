@@ -14,35 +14,38 @@
 /build
 /dist
 
-# misc
+# misc & system
 .DS_Store
 *.pem
 Thumbs.db
+*.tsbuildinfo
+next-env.d.ts
+.vscode/
+.idea/
+*.swp
+*.swo
 
-# debug
+# logs & debug
+*.log
+logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
 # local env files
-.env*.local
 .env
+.env*.local
 .env.test
 .env.test.local
+!.env.example
 
 # vercel
 .vercel
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-
-# IDEs
-.vscode/
-.idea/
-*.swp
-*.swo
+# development cache
+.turbo
+.cache
 
 # Prisma
 .prisma/
