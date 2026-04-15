@@ -103,14 +103,14 @@ export default function Controls({
 
       <div className="mt-4 p-sm rounded" style={{ backgroundColor: 'rgba(0,0,0,0.3)', wordBreak: 'break-all' }}>
         <h3 className="text-md font-semibold text-color-secondary mb-2" style={{ color: 'var(--color-secondary)' }}>Status: {statusText}</h3>
-        {isAsyncPending && <div className="text-sm text-warning" style={{ color: 'var(--color-warning)' }}>Spinner / Loading...</div>}
+        {isAsyncPending && <div className="text-sm text-warning" style={{ color: 'var(--color-warning)' }}>Loading...</div>}
 
         <label className="mt-2">Commit Hash (SHA256)</label>
         <div className="text-sm font-mono text-muted">{commitHex || 'None yet'}</div>
 
         {serverSeed && (
           <>
-            <label className="mt-2 text-success" style={{ color: 'var(--color-success)' }}>Revealed Server Seed</label>
+            <label className="mt-2 text-success" style={{ color: 'var(--color-success)' }}>✅ Revealed Server Seed</label>
             <div className="text-sm font-mono text-muted">{serverSeed}</div>
           </>
         )}

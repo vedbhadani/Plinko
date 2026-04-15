@@ -104,10 +104,10 @@ The repository includes several standalone scripts for manual verification and e
 ## 🌐 Live Deployment
 
 - **GitHub Repo**: https://github.com/vedbhadani/Plinko
-- **Live App**: https://plinko-lab.vercel.app
-- **Verifier Page**: https://plinko-lab.vercel.app/verify
+- **Live App**: https://plinko-blush.vercel.app/
+- **Verifier Page**: https://plinko-blush.vercel.app/verify
 - **Local Example Round Permalink**: http://localhost:3000/verify?roundId=cmnzvizvt000fpptvffcrk5gg
-- **Production Permalink Format**: `https://plinko-lab.vercel.app/verify?roundId=<revealed-round-id>`
+- **Production Permalink Format**: `https://plinko-blush.vercel.app/verify?roundId=<revealed-round-id>`
 
 After creating and revealing a round, open `/verify?roundId=<roundId>` to prefill the stored round and show a field-by-field PASS/FAIL comparison with replay.
 

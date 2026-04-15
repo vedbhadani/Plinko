@@ -241,10 +241,6 @@ export default function Home() {
         </div>
       </header>
 
-      <div className="w-full flex justify-center mt-4">
-        <PaytableDisplay activeBinIndex={activeBinIndex} />
-      </div>
-
       <div className="game-layout flex gap-lg w-full max-w-6xl" style={{ alignItems: 'flex-start' }}>
 
         {/* Left sidebar: Controls */}
@@ -281,6 +277,9 @@ export default function Home() {
             isGoldenBall={isGoldenBall}
             isSecretTheme={isSecretTheme}
           />
+          <div className="mt-2">
+            <PaytableDisplay activeBinIndex={activeBinIndex} />
+          </div>
         </div>
 
         {/* Right sidebar: Session Log */}

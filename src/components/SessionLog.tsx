@@ -99,7 +99,7 @@ export default function SessionLog({ onReplayRound, refreshToken = 0 }: SessionL
         <p className="text-sm text-muted">No completed rounds yet.</p>
       )}
 
-      <div className="flex flex-col gap-sm">
+      <div className="flex flex-col gap-sm" style={{ maxHeight: '572px', overflowY: 'auto', paddingRight: '4px' }}>
         {rounds.map((round) => {
           const path = parsePath(round.pathJson);
           const canReplay = Boolean(path && round.dropColumn !== null);
@@ -117,13 +117,30 @@ export default function SessionLog({ onReplayRound, refreshToken = 0 }: SessionL
                   <div className="text-sm text-muted">{createdAt}</div>
                 </div>
 
-                <button
-                  className="btn text-sm"
-                  onClick={() => handleReplay(round)}
-                  disabled={!canReplay}
-                >
-                  Replay
-                </button>
+                <div className="flex gap-sm">
+                  {round.status === 'REVEALED' && (
+                    <a
+                      href={`/verify?roundId=${round.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn text-sm"
+                      style={{
+                        textDecoration: 'none',
+                        borderColor: 'var(--color-success)',
+                        color: 'var(--color-success)',
+                      }}
+                    >
+                      Verify
+                    </a>
+                  )}
+                  <button
+                    className="btn text-sm"
+                    onClick={() => handleReplay(round)}
+                    disabled={!canReplay}
+                  >
+                    Replay
+                  </button>
+                </div>
               </div>
 
               <div className="text-sm text-muted mt-2">
