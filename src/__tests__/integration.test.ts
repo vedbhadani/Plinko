@@ -68,7 +68,9 @@ describe('Round Lifecycle API Integration', () => {
     expect(body).toHaveProperty('pegMapHash');
     expect(body).toHaveProperty('binIndex');
     expect(body).toHaveProperty('path');
+    expect(body).toHaveProperty('decisionTrace');
     expect(body.path.length).toBe(12);
+    expect(body.decisionTrace.length).toBe(12);
 
     // Verify state in DB
     const roundInDb = await prisma.round.findUnique({ where: { id: roundId } });
@@ -117,6 +119,7 @@ describe('Round Lifecycle API Integration', () => {
     url.searchParams.set('clientSeed', clientSeed);
     url.searchParams.set('nonce', nonce);
     url.searchParams.set('dropColumn', dropColumn.toString());
+    url.searchParams.set('roundId', roundId);
 
     const request = new Request(url);
     const response = await verifyRound(request);
@@ -129,6 +132,8 @@ describe('Round Lifecycle API Integration', () => {
     // Values match what we expect from a started round
     expect(body).toHaveProperty('binIndex');
     expect(body).toHaveProperty('pegMapHash');
+    expect(body.allMatch).toBe(true);
+    expect(body.checks.every((check: { match: boolean }) => check.match)).toBe(true);
     
     // We can't easily assert exactly binIndex against /start without mocking, 
     // but we can fetch the DB round to compare
