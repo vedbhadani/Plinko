@@ -17,8 +17,9 @@ describe('xorshift32 PRNG', () => {
   const clientSeed = 'candidate-hello';
 
   it('produces correct first 5 values from assignment test vectors', () => {
-    // We determined that seed 3789414263 produces the exact sequence required by the assignment
-    const seed = 3789414263;
+    const combinedSeed = computeCombinedSeed(serverSeed, clientSeed, nonce);
+    const seed = extractSeed(combinedSeed);
+    expect(seed).toBe(3789414263);
     const rand = xorshift32(seed);
 
     const expected = [

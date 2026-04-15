@@ -13,11 +13,22 @@ import type { PRNG } from './prng';
 
 export type Direction = 'L' | 'R';
 
+export interface DecisionTrace {
+  row: number;
+  posBefore: number;
+  pegIndex: number;
+  leftBias: number;
+  adjustedBias: number;
+  rnd: number;
+  direction: Direction;
+}
+
 export interface SimulationResult {
   path: Direction[];
   binIndex: number;
   pegMap: number[][];
   pegMapHash: string;
+  decisionTrace: DecisionTrace[];
 }
 
 /**
@@ -84,30 +95,41 @@ export function simulatePath(
   pegMap: number[][],
   dropColumn: number,
   rows: number = 12
-): { path: Direction[]; binIndex: number } {
+): { path: Direction[]; binIndex: number; decisionTrace: DecisionTrace[] } {
   const path: Direction[] = [];
+  const decisionTrace: DecisionTrace[] = [];
   let pos = 0; // number of Right moves so far
 
   // Drop column influence: small bias adjustment
   const adj = (dropColumn - Math.floor(rows / 2)) * 0.01;
 
   for (let r = 0; r < rows; r++) {
+    const posBefore = pos;
     // Use the peg at index min(pos, r) — peg under current path
     const pegIndex = Math.min(pos, r);
     const leftBias = pegMap[r][pegIndex];
     const bias = clamp(leftBias + adj, 0, 1);
 
     const rnd = rand();
+    const direction: Direction = rnd < bias ? 'L' : 'R';
 
-    if (rnd < bias) {
-      path.push('L');
-    } else {
-      path.push('R');
+    path.push(direction);
+    decisionTrace.push({
+      row: r,
+      posBefore,
+      pegIndex,
+      leftBias,
+      adjustedBias: parseFloat(bias.toFixed(6)),
+      rnd: parseFloat(rnd.toFixed(10)),
+      direction,
+    });
+
+    if (direction === 'R') {
       pos += 1;
     }
   }
 
-  return { path, binIndex: pos };
+  return { path, binIndex: pos, decisionTrace };
 }
 
 /**
@@ -121,7 +143,7 @@ export function runSimulation(
 ): SimulationResult {
   const pegMap = generatePegMap(rand, rows);
   const pegMapHash = computePegMapHash(pegMap);
-  const { path, binIndex } = simulatePath(rand, pegMap, dropColumn, rows);
+  const { path, binIndex, decisionTrace } = simulatePath(rand, pegMap, dropColumn, rows);
 
-  return { path, binIndex, pegMap, pegMapHash };
+  return { path, binIndex, pegMap, pegMapHash, decisionTrace };
 }

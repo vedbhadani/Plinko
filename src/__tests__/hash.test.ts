@@ -6,6 +6,11 @@ import { describe, it, expect } from 'vitest';
 import { sha256, computeCommitHex, computeCombinedSeed } from '../lib/hash';
 
 describe('SHA-256 hash helpers', () => {
+  const assignmentServerSeed =
+    'b2a5f3f32a4d9c6ee7a8c1d33456677890abcdeffedcba0987654321ffeeddcc';
+  const assignmentClientSeed = 'candidate-hello';
+  const assignmentNonce = '42';
+
   it('sha256 produces correct hex output', () => {
     // Known SHA-256 test vector
     const hash = sha256('hello');
@@ -26,11 +31,25 @@ describe('SHA-256 hash helpers', () => {
   });
 
   it('computeCommitHex formats correctly', () => {
-    const serverSeed = 'abc123';
-    const nonce = '42';
+    const serverSeed = assignmentServerSeed;
+    const nonce = assignmentNonce;
     const commitHex = computeCommitHex(serverSeed, nonce);
-    const expected = sha256('abc123:42');
+    const expected = sha256(`${serverSeed}:${nonce}`);
     expect(commitHex).toBe(expected);
+  });
+
+  it('matches assignment commitHex test vector exactly', () => {
+    expect(computeCommitHex(assignmentServerSeed, assignmentNonce)).toBe(
+      'bb9acdc67f3f18f3345236a01f0e5072596657a9005c7d8a22cff061451a6b34'
+    );
+  });
+
+  it('matches assignment combinedSeed test vector exactly', () => {
+    expect(
+      computeCombinedSeed(assignmentServerSeed, assignmentClientSeed, assignmentNonce)
+    ).toBe(
+      'e1dddf77de27d395ea2be2ed49aa2a59bd6bf12ee8d350c16c008abd406c07e0'
+    );
   });
 
   it('computeCombinedSeed formats correctly', () => {

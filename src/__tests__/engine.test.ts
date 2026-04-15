@@ -37,6 +37,15 @@ describe('Deterministic Plinko Engine', () => {
       }
     });
 
+    it('matches assignment peg map first-row vectors', () => {
+      const rand = createTestPRNG();
+      const pegMap = generatePegMap(rand, 12);
+
+      expect(pegMap[0]).toEqual([0.422123]);
+      expect(pegMap[1]).toEqual([0.552503, 0.408786]);
+      expect(pegMap[2]).toEqual([0.491574, 0.46878, 0.43654]);
+    });
+
     it('all leftBias values are in [0.4, 0.6]', () => {
       const rand = createTestPRNG();
       const pegMap = generatePegMap(rand, 12);
@@ -162,6 +171,7 @@ describe('Deterministic Plinko Engine', () => {
       // Assignment spec: dropColumn = 6 (center for 13 bins), adj = 0 → binIndex = 6
       expect(result.binIndex).toBe(6);
       expect(result.path.length).toBe(12);
+      expect(result.decisionTrace.length).toBe(12);
       expect(result.pegMapHash).toMatch(/^[a-f0-9]{64}$/);
     });
 
