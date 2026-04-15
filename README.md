@@ -77,6 +77,19 @@ Verified against assignment test vectors.
 npm test
 ```
 
+### Standalone Validation Scripts
+
+The repository includes several standalone scripts for manual verification and engine auditing:
+
+- **`scratch/`**: Contains core logic validation tools.
+  - `scratch/verify_spec.js`: Automates verification against the assignment's official test vectors.
+  - `scratch/determinism_test.js`: Validates that the engine produces identical results for identical seeds across multiple runs.
+  - `scratch/verify_pegmap.js`: Visualizes and verifies the integrity of the generated peg bias map.
+- **Root Scripts**:
+  - `test-prng.js`: Unit test for the `xorshift32` implementation.
+  - `verify.js`: A command-line version of the verification logic.
+  - `reverse.js` / `test-reverse.js`: Tools used during development to verify path reconstruction from drop positions.
+
 ### Assignment Test Vectors
 
 - `serverSeed`: `b2a5f3f32a4d9c6ee7a8c1d33456677890abcdeffedcba0987654321ffeeddcc`
