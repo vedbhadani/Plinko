@@ -12,7 +12,7 @@ export default function PaytableDisplay({ activeBinIndex }: PaytableDisplayProps
         // Color coding logic:
         // Hotter colors for higher multipliers
         let bgColor = '#12122a'; // Default surface
-        let borderColor = 'rgba(255,255,255,0.1)';
+        const borderColor = 'rgba(255,255,255,0.1)';
         
         if (multiplier >= 100) {
           bgColor = '#e17055'; // Danger (red)
