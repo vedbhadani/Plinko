@@ -101,15 +101,18 @@ The repository includes several standalone scripts for manual verification and e
 - First five PRNG values: `0.1106166649`, `0.7625129214`, `0.0439292176`, `0.4578678815`, `0.3438999297`
 - First peg rows: `[0.422123]`, `[0.552503,0.408786]`, `[0.491574,0.46878,0.43654]`
 
-## 🌐 Live Deployment
+## Live Deployment
 
-- **GitHub Repo**: https://github.com/vedbhadani/Plinko
-- **Live App**: https://plinko-blush.vercel.app/
-- **Verifier Page**: https://plinko-blush.vercel.app/verify
-- **Local Example Round Permalink**: http://localhost:3000/verify?roundId=cmnzvizvt000fpptvffcrk5gg
-- **Production Permalink Format**: `[https://plinko-blush.vercel.app/verify?roundId=<revealed-round-id>](https://plinko-blush.vercel.app/verify?roundId=cmo0jo1nl0007ppznmt3n4itm)`
+| | URL |
+|---|---|
+| GitHub Repo | https://github.com/vedbhadani/Plinko |
+| Live App | https://plinko-blush.vercel.app/ |
+| Verifier Page | https://plinko-blush.vercel.app/verify |
+| Example Round | https://plinko-blush.vercel.app/verify?roundId=cmo0jo1nl0007ppznmt3n4itm |
 
-After creating and revealing a round, open `/verify?roundId=<roundId>` to prefill the stored round and show a field-by-field PASS/FAIL comparison with replay.
+To verify a round: play a game, reveal the server seed, then open
+`/verify?roundId=<id>` — it prefills all fields and shows a field-by-field
+✅/❌ comparison against the stored round.
 
 ## 📝 Submission Details
 
